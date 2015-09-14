@@ -1,0 +1,9 @@
+name,label,unit
+model,Model name, 
+MPG,Miles per Gallon,mpg.
+cylinders,Number of cylinders, #
+horsepower,Horsepower,hp.
+weight,Vehicle weight,lbs.
+year,Model year,yr.
+origin,Country of origin,
+

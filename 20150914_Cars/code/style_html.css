@@ -1,0 +1,184 @@
+body {
+	    background-image: url("road.jpg");
+	    background-color: #cccccc;
+	    background-attachment: fixed;
+	    background-position: center; 
+	    background-repeat: no-repeat;
+		font-family: "Trebuchet MS", Helvetica, sans-serif ;
+		/*background-size: auto 150%;*/
+	}
+
+@media (max-aspect-ratio: 1920/1200){
+	body {background-size: auto 100%;}
+}
+
+@media (min-aspect-ratio: 1920/1200){
+	body {background-size: 100% auto;}
+}
+
+div#bgAdapt{
+	position: fixed;
+	z-index: -100;
+	left: 0px;
+	top:0px;
+	width: 100%;
+	height:100%;
+	background-color:rgba(0,0,0,.75);
+	margin: 0px;
+
+}
+
+div{
+	background-color: rgba(180,180,180,.5);
+	margin: 10px;
+}
+div#story{
+	background-color: rgba(220,220,220,.8);
+	position: fixed;
+	padding: 10px;
+	float: right;
+	display: block;
+	margin: auto;
+}
+
+.storyButton{
+	bottom: 10px;
+	background-color: rgba(50,50,50,.4);
+	padding-left:5px;
+	cursor: pointer;
+}
+
+.tooltip{
+	font-size: 9px;
+	position: relative;
+	background-color: rgba(0,0,0,.7);
+}
+.legendSvg{
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+
+@media (max-width:1320px) {
+	div{
+		display: block;
+		margin: 10px;
+	}
+
+	#chartDiv{
+		width: 1000px;
+		margin-left: auto;
+		margin-right: auto;
+
+	}
+
+	#legendDiv{
+		width: 250px;
+		height: 500px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.legendSvg{
+		width: 250px;
+
+	}
+
+	#infoDiv{
+		background-color: rgba(220,220,220,.5);
+		width: 960px;		
+		height: 60px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	#explainDimDiv{
+		background-color: rgba(220,220,220,.5);
+		width: 780px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+}
+@media (min-width:1321px) {
+	#chartDiv{
+		width: 1000px;
+		height: 500px;
+		float: left;
+
+	}
+
+	#legendDiv{
+		width: 250px;
+		height: 500px;
+		float: right;
+	}
+	.legendSvg{
+		width: 250px;
+	}
+
+	#infoDiv{
+		width: 960px;		
+		height: 60px;
+		position: relative;
+		float:left;	
+		margin: 10px;
+		/*margin-left: auto;
+		margin-right: auto;*/
+	}
+	#explainDimDiv{
+		width: 280px;
+		height: 180px;
+		float: left;
+		position:relative;
+	}
+
+}
+
+#infoDiv{
+	padding: 20px;
+
+}
+
+.highlight{
+	background-color:rgba(196,119,73,1);
+}
+div#creDiv{
+	background-color:rgba(0,0,0,0);
+	position: fixed;
+	right: 30px;
+	bottom: 1px;
+	margin: 0px;
+	z-index: 5;
+}
+
+p.credits{
+	color: rgba(220,220,220,1);
+	background-color: none;
+	font-size:10px;
+}
+/*div.intro{
+	width: 400px;
+	height: 400px;
+	position:absolute;
+	top: 20px;
+	right: 20px;
+}*/
+svg{
+	display: block;
+	margin: auto;
+}
+
+h1{
+	text-align: center;
+	font-size: 50px;
+	color: rgba(220,220,220,1);
+	min-width: 1000px;
+	text-decoration: none;
+}
+h4{
+	text-align: center;
+}
+a{	text-decoration:none;
+	color: rgba(220,220,220,1);
+	}
+

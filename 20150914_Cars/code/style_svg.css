@@ -1,0 +1,132 @@
+
+.easterL{
+  fill: #0ff;
+}
+
+.easterR{
+  fill: #f00;
+}
+
+.dot {
+  fill: #000;
+  opacity: .7;
+  stroke: rgba(0,0,0,0);
+  /*stroke-opacity: 0;*/
+  stroke-width: 6;
+  cursor: pointer;
+}
+
+
+
+.axis{
+  fill: none;
+  stroke: #000;
+}
+text{
+  fill: #000;
+  stroke: none;
+}
+
+.axisTitle{
+  cursor: pointer;
+}
+
+.titleButton{
+  fill: #ddd;
+  stroke: #000;
+  stroke-width:1;
+  cursor: pointer;
+
+}
+
+.plotMenuButton{
+  fill: #ddd;
+  opacity: .8;
+  cursor: pointer;
+}
+
+.title > text{
+/*  text-decoration: underline;
+*/  font-weight: bold;
+}
+
+text{
+  fill: #000;
+  opacity: 1;
+  cursor: pointer;
+
+} 
+.entry{
+  fill: #aaa;
+  opacity: .8;
+  cursor:pointer;
+}
+
+.entry > text{
+  fill: #000;
+  opacity: 1;
+} 
+
+.sameVal{
+  fill: #fd4;
+  opacity: .9;
+}
+
+.selDot {
+  fill: #fff;
+  opacity: .5;
+
+}
+
+
+.highlight{
+  fill: rgba(255,255,255,1);
+  opacity: 1;
+}
+
+
+.x{
+}
+
+.y{
+
+}
+
+
+.exo{
+  fill: #840;
+  stroke:#840;
+  stroke-width: 2px;
+}
+
+.terra{
+  fill: #044;
+  stroke:#044;
+  stroke-width: 1px;
+  
+}
+
+.orbit{
+  fill: none;
+  opacity: .3;
+}
+
+.planet{
+  stroke: none;
+  opacity: 1;
+}
+
+
+.star{
+  fill: yellow;
+  stroke:yellow;
+  stroke-width: 1px;
+  ;
+}
+
+
+
+text{
+  font-family: "Trebuchet MS", Helvetica, sans-serif ;
+  
+}
