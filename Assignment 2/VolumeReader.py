@@ -10,9 +10,10 @@ Created on Wed Sep 16 14:27:37 2015
 # This example reads a volume dataset, extracts an isosurface that
 # represents the skin and displays it.
 
+import sys
+import Tkinter
 import vtk
-from vtk.util.misc import vtkGetDataRoot
-VTK_DATA_ROOT = vtkGetDataRoot()
+from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 
 
 
@@ -38,7 +39,13 @@ v16.SetDataDimensions(256, 256)
 v16.SetDataByteOrderToLittleEndian()
 v16.SetFilePrefix(".\Data\slice")
 v16.SetImageRange(1, 94)
-v16.SetDataSpacing(3.2, 3.2, 5)
+
+
+spacing = v16.GetOutput().GetSpacing()
+sx, sy, sz = spacing
+v16.SetDataSpacing(sx, sy, sz)
+
+#print sz
 
 # An isosurface, or contour value of 500 is known to correspond to the
 # skin of the patient. Once generated, a vtkPolyDataNormals filter is
@@ -47,7 +54,7 @@ v16.SetDataSpacing(3.2, 3.2, 5)
 # isosurface these render much faster on may systems.
 skinExtractor = vtk.vtkContourFilter()
 skinExtractor.SetInputConnection(v16.GetOutputPort())
-skinExtractor.SetValue(0, 2100)
+skinExtractor.SetValue(0, 300)
 skinNormals = vtk.vtkPolyDataNormals()
 skinNormals.SetInputConnection(skinExtractor.GetOutputPort())
 skinNormals.SetFeatureAngle(20.0)
@@ -56,6 +63,8 @@ skinMapper.SetInputConnection(skinNormals.GetOutputPort())
 skinMapper.ScalarVisibilityOff()
 skin = vtk.vtkActor()
 skin.SetMapper(skinMapper)
+
+
 
 # It is convenient to create an initial view of the data. The FocalPoint
 # and Position form a vector direction. Later on (ResetCamera() method)
@@ -80,8 +89,42 @@ aCamera.Dolly(1.5)
 aRenderer.SetBackground(1, 1, 1)
 renWin.SetSize(640, 480)
 
+class scale:
+    "Scale"
+    def __init__(self, root, renWin, sphere):
+        self.renWin, self.sphere = renWin, sphere
+        scale = Tkinter.Scale(root, from_=0, to=3000,resolution=1.0, orient= "horizontal", command=self.change)
+        scale.pack(side='bottom')
+
+    def change(self, val):
+        # This strange int(float()) conversion is required....
+        skinExtractor.SetValue(0, int(float(val)))
+        self.renWin.Render()
+
+
+root = Tkinter.Tk() 
+
+renderWidget = vtkTkRenderWidget(root,width=400,height=400)
+renderWidget.pack(expand='true',fill='both')
+
+renWin = renderWidget.GetRenderWindow()
+
+ren = vtk.vtkRenderer()
+renWin.AddRenderer(aRenderer)
+ren.AddActor(skin)
+
+scale=scale(root, renWin, skinExtractor)
+
+
+
+
+
+
 
 # Interact with the data.
-iren.Initialize()
-renWin.Render()
-iren.Start()
+#iren.Initialize()
+#renWin.Render()
+#iren.Start()
+root.mainloop()
+
+
