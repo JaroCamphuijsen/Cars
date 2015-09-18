@@ -32,7 +32,7 @@ iren.SetRenderWindow(renWin)
 v16 = vtk.vtkVolume16Reader()
 v16.SetDataDimensions(256, 256)
 v16.SetDataByteOrderToBigEndian()
-v16.SetFilePrefix("C:\Users\Eva van Weel\Documents\Uva\Master 2\Scientific Visualization and Virtual Reality\Assignment 2\slice")
+v16.SetFilePrefix(".\Data\slice")
 v16.SetImageRange(1, 94)
 v16.SetDataSpacing(3.2, 3.2, 3.2)
 
