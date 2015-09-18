@@ -38,6 +38,16 @@ v16.SetFilePrefix(".\Data\slice")
 v16.SetImageRange(1, 94)
 v16.SetDataSpacing(3.2, 3.2, 5)
 
+im = v16.GetImage(6)
+
+# histogram = vtk.vtkImageAccumulate()
+# histogram.SetInputConnection(im.GetOutputPort())
+# histogram.SetComponentExtent(0,255,0,0,0,0)
+# histogram.SetComponentOrigin(0,0,0)
+# histogram.SetComponentSpacing(1,0,0)
+# histogram.IgnoreZeroOn()
+# histogram.Update()
+
 # An isosurface, or contour value of 500 is known to correspond to the
 # skin of the patient. Once generated, a vtkPolyDataNormals filter is
 # is used to create normals for smooth surface shading during rendering.
@@ -45,7 +55,7 @@ v16.SetDataSpacing(3.2, 3.2, 5)
 # isosurface these render much faster on may systems.
 skinExtractor = vtk.vtkContourFilter()
 skinExtractor.SetInputConnection(v16.GetOutputPort())
-skinExtractor.SetValue(0, 1500)
+skinExtractor.SetValue(0, 2800)
 skinNormals = vtk.vtkPolyDataNormals()
 skinNormals.SetInputConnection(skinExtractor.GetOutputPort())
 skinNormals.SetFeatureAngle(20.0)
