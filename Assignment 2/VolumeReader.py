@@ -21,6 +21,8 @@ aRenderer = vtk.vtkRenderer()
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(aRenderer)
 iren = vtk.vtkRenderWindowInteractor()
+style = vtk.vtkInteractorStyleTrackballCamera()
+iren.SetInteractorStyle(style)
 iren.SetRenderWindow(renWin)
 
 # The following reader is used to read a series of 2D slices (images)
@@ -31,10 +33,10 @@ iren.SetRenderWindow(renWin)
 # is the root name of the file: quarter.)
 v16 = vtk.vtkVolume16Reader()
 v16.SetDataDimensions(256, 256)
-v16.SetDataByteOrderToBigEndian()
+v16.SetDataByteOrderToLittleEndian()
 v16.SetFilePrefix(".\Data\slice")
 v16.SetImageRange(1, 94)
-v16.SetDataSpacing(3.2, 3.2, 3.2)
+v16.SetDataSpacing(3.2, 3.2, 5)
 
 # An isosurface, or contour value of 500 is known to correspond to the
 # skin of the patient. Once generated, a vtkPolyDataNormals filter is
@@ -43,24 +45,17 @@ v16.SetDataSpacing(3.2, 3.2, 3.2)
 # isosurface these render much faster on may systems.
 skinExtractor = vtk.vtkContourFilter()
 skinExtractor.SetInputConnection(v16.GetOutputPort())
-skinExtractor.SetValue(0, 1000)
+skinExtractor.SetValue(0, 1500)
 skinNormals = vtk.vtkPolyDataNormals()
 skinNormals.SetInputConnection(skinExtractor.GetOutputPort())
-skinNormals.SetFeatureAngle(60.0)
+skinNormals.SetFeatureAngle(20.0)
 skinMapper = vtk.vtkPolyDataMapper()
 skinMapper.SetInputConnection(skinNormals.GetOutputPort())
 skinMapper.ScalarVisibilityOff()
 skin = vtk.vtkActor()
 skin.SetMapper(skinMapper)
 
-# An outline provides context around the data.
-outlineData = vtk.vtkOutlineFilter()
-outlineData.SetInputConnection(v16.GetOutputPort())
-mapOutline = vtk.vtkPolyDataMapper()
-mapOutline.SetInputConnection(outlineData.GetOutputPort())
-outline = vtk.vtkActor()
-outline.SetMapper(mapOutline)
-outline.GetProperty().SetColor(0, 0, 0)
+
 
 # It is convenient to create an initial view of the data. The FocalPoint
 # and Position form a vector direction. Later on (ResetCamera() method)
@@ -75,7 +70,6 @@ aCamera.ComputeViewPlaneNormal()
 # Actors are added to the renderer. An initial camera view is created.
 # The Dolly() method moves the camera towards the FocalPoint,
 # thereby enlarging the image.
-aRenderer.AddActor(outline)
 aRenderer.AddActor(skin)
 aRenderer.SetActiveCamera(aCamera)
 aRenderer.ResetCamera()
