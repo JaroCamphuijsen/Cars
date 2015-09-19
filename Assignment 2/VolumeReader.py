@@ -47,6 +47,8 @@ print spacing()
 sx, sy, sz = spacing()
 v16.SetDataSpacing(sx, sy, sz)
 
+v16.Update()
+scalarMin, scalarMax = v16.GetOutput().GetScalarRange()
 #print sz
 
 # im = v16.GetImage(6)
@@ -69,7 +71,7 @@ skinExtractor.SetInputConnection(v16.GetOutputPort())
 
 skinNormals = vtk.vtkPolyDataNormals()
 skinNormals.SetInputConnection(skinExtractor.GetOutputPort())
-skinNormals.SetFeatureAngle(20.0)
+#skinNormals.SetFeatureAngle(20.0)
 skinMapper = vtk.vtkPolyDataMapper()
 skinMapper.SetInputConnection(skinNormals.GetOutputPort())
 skinMapper.ScalarVisibilityOff()
@@ -108,7 +110,7 @@ class scale:
     "Scale"
     def __init__(self, root, renWin, sphere):
         self.renWin, self.sphere = renWin, sphere
-        scale = Tkinter.Scale(root, from_=0, to=3000,resolution=.1, orient= "horizontal", command=self.change)
+        scale = Tkinter.Scale(root, from_=scalarMin, to=scalarMax,resolution=.1, orient= "horizontal", command=self.change)
         scale.pack(side='bottom')
 
     def change(self, val):
