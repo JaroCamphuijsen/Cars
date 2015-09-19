@@ -21,13 +21,13 @@ from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 # renderer draws into the render window, the interactor enables mouse-
 # and keyboard-based interaction with the scene.
 aRenderer = vtk.vtkRenderer()
+aRenderer.TexturedBackgroundOn()
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(aRenderer)
 iren = vtk.vtkRenderWindowInteractor()
 style = vtk.vtkInteractorStyleTrackballCamera()
 iren.SetInteractorStyle(style)
 iren.SetRenderWindow(renWin)
-
 # The following reader is used to read a series of 2D slices (images)
 # that compose the volume. The slice dimensions are set, and the
 # pixel spacing. The data Endianness must also be specified. The reader
@@ -41,13 +41,15 @@ v16.SetFilePrefix(".\Data\slice")
 v16.SetImageRange(1, 94)
 
 
-spacing = v16.GetOutput().GetSpacing()
-sx, sy, sz = spacing
+# spacing = v16.GetOutput().GetSpacing()
+spacing = lambda: [3.2, 3.2, 5]
+print spacing()
+sx, sy, sz = spacing()
 v16.SetDataSpacing(sx, sy, sz)
 
 #print sz
 
-im = v16.GetImage(6)
+# im = v16.GetImage(6)
 
 # histogram = vtk.vtkImageAccumulate()
 # histogram.SetInputConnection(im.GetOutputPort())
@@ -64,11 +66,7 @@ im = v16.GetImage(6)
 # isosurface these render much faster on may systems.
 skinExtractor = vtk.vtkContourFilter()
 skinExtractor.SetInputConnection(v16.GetOutputPort())
-<<<<<<< HEAD
-skinExtractor.SetValue(0, 2800)
-=======
-skinExtractor.SetValue(0, 300)
->>>>>>> 876e82b4c9d09ad492a9d077eb4af7d5b3d0adac
+
 skinNormals = vtk.vtkPolyDataNormals()
 skinNormals.SetInputConnection(skinExtractor.GetOutputPort())
 skinNormals.SetFeatureAngle(20.0)
@@ -76,6 +74,8 @@ skinMapper = vtk.vtkPolyDataMapper()
 skinMapper.SetInputConnection(skinNormals.GetOutputPort())
 skinMapper.ScalarVisibilityOff()
 skin = vtk.vtkActor()
+skin.SetPosition(400, 200, 400)
+skin.SetOrientation(270, 0, 180)
 skin.SetMapper(skinMapper)
 
 
@@ -85,9 +85,10 @@ skin.SetMapper(skinMapper)
 # this vector is used to position the camera to look at the data in
 # this direction.
 aCamera = vtk.vtkCamera()
-aCamera.SetViewUp(0, 0, -1)
-aCamera.SetPosition(0, 1, 0)
-aCamera.SetFocalPoint(0, 0, 0)
+aCamera.SetPosition(0,0, -4000)
+
+
+
 aCamera.ComputeViewPlaneNormal()
 
 # Actors are added to the renderer. An initial camera view is created.
@@ -101,13 +102,13 @@ aCamera.Dolly(1.5)
 # Set a background color for the renderer and set the size of the
 # render window (expressed in pixels).
 aRenderer.SetBackground(1, 1, 1)
-renWin.SetSize(640, 480)
+renWin.SetSize(600, 480)
 
 class scale:
     "Scale"
     def __init__(self, root, renWin, sphere):
         self.renWin, self.sphere = renWin, sphere
-        scale = Tkinter.Scale(root, from_=0, to=3000,resolution=1.0, orient= "horizontal", command=self.change)
+        scale = Tkinter.Scale(root, from_=0, to=3000,resolution=.1, orient= "horizontal", command=self.change)
         scale.pack(side='bottom')
 
     def change(self, val):
@@ -118,7 +119,7 @@ class scale:
 
 root = Tkinter.Tk() 
 
-renderWidget = vtkTkRenderWidget(root,width=400,height=400)
+renderWidget = vtkTkRenderWidget(root,width=800,height=600)
 renderWidget.pack(expand='true',fill='both')
 
 renWin = renderWidget.GetRenderWindow()

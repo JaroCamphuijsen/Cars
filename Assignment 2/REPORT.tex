@@ -1,0 +1,73 @@
+\documentclass[a4paper]{article}
+\usepackage[english]{babel}
+\usepackage{pdfpages, titling}
+
+\usepackage{array, float}
+\usepackage{cite, amsmath, tablefootnote}
+\usepackage{graphicx, caption, subfigure, wrapfig}
+\usepackage{listings}
+\usepackage{color}
+
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\author{Eva van Weel() and Jaromir Camphuijsen (6042473)}
+\date{\today}
+\title{Mystery Dataset}
+\subtitle{}
+\begin{document}
+\maketitle
+
+
+\tableofcontents
+
+
+\newpage
+\section{Introduction}
+Background, overview of relevant literature, structure of remainder of the report
+
+Introduce the problem that you have studied
+–Describe what others have done (related work)
+–Describe the structure of your report
+•Make sure that you include enough and appropriate references.
+–Explain for each referenced paper why it is relevant for your paper.
+•In some cases, depending on the size of each part, the problem statement and the related work should be made into separate sections or chapters.
+
+\section{Core (multiple sections)}
+Your report must clearly explain what it is about, and should not just be a repository of facts.
+•The structure of this part depends on the nature of your work. E.g.:
+–Start by describing your methods and algorithms
+•Use formulae, pseudo-code
+–Describe the implementation
+•Describe import choices, leave out what should be self-evident
+•But (well documented) source code goes to appendices, if to be included at all
+–Describe your experiment and the results
+–Interpret your results
+•As with the introduction, the core may be split into separate sections, like methods, experimentation and interpretation of the results.
+
+\section{conclusions}
+In this section you give a clear resume of the conclusions from your work and discuss its relation to previous research.
+–For that reason, some authors will actually put the section on related work after the core section(s)
+–The conclusions should reflect back on the original problem statement in your introduction.
+•When applicable, your work may result in suggestions on how to further validate or extend your research.
+
+
+\bibliography{REPORTbib}
+\bibliographystyle{ieeetr}
+\end{document}
