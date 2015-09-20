@@ -94,12 +94,14 @@ aRenderer.AddActor(contour)
 aRenderer.AddActor(skin)
 
 # Camera (viewpoint) settings
+
 aCamera = vtk.vtkCamera()
-aCamera.SetPosition(0,0, -4000)
-aCamera.ComputeViewPlaneNormal()
+# aCamera.ComputeViewPlaneNormal()
 aRenderer.SetActiveCamera(aCamera)
-aRenderer.ResetCamera()
-aCamera.Dolly(1) #Move camera to focal point
+aCamera.SetPosition(0,0,-2000)
+aCamera.Azimuth(-45)
+aRenderer.ResetCamera() #Without this camera Reset, the actors will not be displayed
+
 
 #Class which allows the interactivity of the slider. Based on code from:
 #http://www.uppmax.uu.se/docs/w/index.php/TkInter. Slide through the scalar
@@ -108,10 +110,10 @@ class scale:
     "Scale"
     def __init__(self, root, renWin, contourFilter):
         self.renWin, self.contourFilter = renWin, contourFilter
-        scale = Tkinter.Scale(root, length=1000, from_=scalarMin, to=scalarMax,
+        scale = Tkinter.Scale(root, length=1000, from_=scalarMin, to=3000,
                               resolution=.1, orient= "horizontal", 
                               command=self.change)
-        scale.set(scalarMax/2)  
+        scale.set(2750)  
         scale.pack(side='bottom')
 
     def change(self, val):
