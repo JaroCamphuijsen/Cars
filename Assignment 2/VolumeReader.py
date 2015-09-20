@@ -5,6 +5,9 @@ Created on Wed Sep 16 14:27:37 2015
 @author: Jaromir Camphuijsen (6042473) and Eva van Weel(10244743)
 """
 
+#This code is based on code found at: http://www.vtk.org/gitweb?p=VTK.git;
+#a=blob;f=Examples/Medical/Python/Medical3.py
+
 import Tkinter
 import vtk
 from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
@@ -72,8 +75,6 @@ skin.SetPosition(400, 200, 400)
 skin.SetOrientation(270, 0, 180)
 skin.SetMapper(skinMapper)
 skin.GetProperty().SetDiffuseColor(1, .6, .25)
-#skin.GetProperty().SetSpecular(.3)
-#skin.GetProperty().SetSpecularPower(20)
 skin.GetProperty().SetOpacity(0.5)
 
 #Create outline to show extent of the data.
