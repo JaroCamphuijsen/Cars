@@ -108,7 +108,9 @@ class scale:
     "Scale"
     def __init__(self, root, renWin, contourFilter):
         self.renWin, self.contourFilter = renWin, contourFilter
-        scale = Tkinter.Scale(root, length=1000, from_=scalarMin, to=scalarMax,resolution=.1, orient= "horizontal", command=self.change)
+        scale = Tkinter.Scale(root, length=1000, from_=scalarMin, to=scalarMax,
+                              resolution=.1, orient= "horizontal", 
+                              command=self.change)
         scale.set(scalarMax/2)  
         scale.pack(side='bottom')
 
