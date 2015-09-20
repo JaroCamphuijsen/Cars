@@ -108,7 +108,7 @@ class scale:
     "Scale"
     def __init__(self, root, renWin, sphere):
         self.renWin, self.sphere = renWin, sphere
-        scale = Tkinter.Scale(root, from_=0, to=3000,resolution=.1, orient= "horizontal", command=self.change)
+        scale = Tkinter.Scale(root, from_=0, to=3000,resolution=.1, orient= "horizontal", takefocus=1000, command=self.change, length=600, label="attenuation coefficient")
         scale.pack(side='bottom')
 
     def change(self, val):
