@@ -40,17 +40,14 @@ scalarMin, scalarMax = v16.GetOutput().GetScalarRange()
 
 
 #Create an isosurface and use vtkPolyDataNormals to create normals for smooth 
-#surface shading.The triangle stripper is used to create triangle strips from 
-#the isosurface which render much faster on many systems.
+#surface shading.
 contourFilter = vtk.vtkContourFilter()
 contourFilter.SetInputConnection(v16.GetOutputPort())
 contourNormals = vtk.vtkPolyDataNormals()
 contourNormals.SetInputConnection(contourFilter.GetOutputPort())
 contourNormals.SetFeatureAngle(60.0)
-stripper = vtk.vtkStripper()
-stripper.SetInputConnection(contourNormals.GetOutputPort())
 dataMapper = vtk.vtkPolyDataMapper()
-dataMapper.SetInputConnection(stripper.GetOutputPort())
+dataMapper.SetInputConnection(contourNormals.GetOutputPort())
 dataMapper.ScalarVisibilityOff() 
 contour = vtk.vtkActor()
 contour.SetPosition(400, 200, 400)
@@ -58,24 +55,22 @@ contour.SetOrientation(270, 0, 180)
 contour.SetMapper(dataMapper)
 
 #Create contour for the skin (scalar value around 500). Set this to opacity
-#0.5 so that it is transparent. 
+#0.25 so that it is transparent. 
 skinExtractor = vtk.vtkContourFilter()
 skinExtractor.SetInputConnection(v16.GetOutputPort())
 skinExtractor.SetValue(0,500)
 skinNormals = vtk.vtkPolyDataNormals()
 skinNormals.SetInputConnection(skinExtractor.GetOutputPort())
 skinNormals.SetFeatureAngle(60.0)
-skinStripper = vtk.vtkStripper()
-skinStripper.SetInputConnection(skinNormals.GetOutputPort())
 skinMapper = vtk.vtkPolyDataMapper()
-skinMapper.SetInputConnection(skinStripper.GetOutputPort())
+skinMapper.SetInputConnection(skinNormals.GetOutputPort())
 skinMapper.ScalarVisibilityOff()
 skin = vtk.vtkActor()
 skin.SetPosition(400, 200, 400)
 skin.SetOrientation(270, 0, 180)
 skin.SetMapper(skinMapper)
 skin.GetProperty().SetDiffuseColor(1, .6, .25)
-skin.GetProperty().SetOpacity(0.5)
+skin.GetProperty().SetOpacity(0.25)
 
 #Create outline to show extent of the data.
 outlineData = vtk.vtkOutlineFilter()
@@ -94,14 +89,13 @@ aRenderer.AddActor(contour)
 aRenderer.AddActor(skin)
 
 # Camera (viewpoint) settings
-
 aCamera = vtk.vtkCamera()
-# aCamera.ComputeViewPlaneNormal()
 aRenderer.SetActiveCamera(aCamera)
-aCamera.SetPosition(0,0,-2000)
+aCamera.SetPosition(0,0,-1)
 aCamera.Azimuth(-45)
-aRenderer.ResetCamera() #Without this camera Reset, the actors will not be displayed
-
+aRenderer.ResetCamera() #Without this camera Reset, the actors will not 
+# be displayed on starting the visualization
+aCamera.Dolly(1.3)
 
 #Class which allows the interactivity of the slider. Based on code from:
 #http://www.uppmax.uu.se/docs/w/index.php/TkInter. Slide through the scalar
@@ -110,7 +104,7 @@ class scale:
     "Scale"
     def __init__(self, root, renWin, contourFilter):
         self.renWin, self.contourFilter = renWin, contourFilter
-        scale = Tkinter.Scale(root, length=1000, from_=scalarMin, to=3000,
+        scale = Tkinter.Scale(root, length=1000, from_=scalarMin, to=scalarMax,
                               resolution=.1, orient= "horizontal", 
                               command=self.change)
         scale.set(2750)  
