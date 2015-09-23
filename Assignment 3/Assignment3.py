@@ -18,8 +18,8 @@ from vtk.util.colors import *
 # that we can query the output for its length, i.e., the length of the
 # diagonal of the bounding box. This is useful for normalizing the
 # data.
-reader = vtk.vtkStructuredGridReader()
-#reader = vtk.vtkStructuredPointsReader()
+#reader = vtk.vtkStructuredGridReader()
+reader = vtk.vtkStructuredPointsReader()
 reader.SetFileName("./SMRX.vtk")
 reader.Update()
 
@@ -61,13 +61,13 @@ streamTubeActor = vtk.vtkActor()
 streamTubeActor.SetMapper(mapStreamTube)
 streamTubeActor.GetProperty().BackfaceCullingOn()
 
-outline = vtk.vtkStructuredGridOutlineFilter()
-outline.SetInputConnection(reader.GetOutputPort())
-mapOutline = vtk.vtkPolyDataMapper()
-mapOutline.SetInputConnection(outline.GetOutputPort())
-outlineActor = vtk.vtkActor()
-outlineActor.SetMapper(mapOutline)
-outlineActor.GetProperty().SetColor(0, 0, 0)
+#outline = vtk.vtkStructuredGridOutlineFilter()
+#outline.SetInputConnection(reader.GetOutputPort())
+#mapOutline = vtk.vtkPolyDataMapper()
+#mapOutline.SetInputConnection(outline.GetOutputPort())
+#outlineActor = vtk.vtkActor()
+#outlineActor.SetMapper(mapOutline)
+#outlineActor.GetProperty().SetColor(0, 0, 0)
 
 # Now create the usual graphics stuff.
 ren = vtk.vtkRenderer()
@@ -77,7 +77,7 @@ iren = vtk.vtkRenderWindowInteractor()
 iren.SetRenderWindow(renWin)
 
 
-ren.AddActor(outlineActor)
+#ren.AddActor(outlineActor)
 ren.AddActor(streamTubeActor)
 
 ren.SetBackground(slate_grey)
