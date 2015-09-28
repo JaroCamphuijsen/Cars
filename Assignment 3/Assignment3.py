@@ -127,18 +127,27 @@ streamTube2.SetCapping(1)
 
 vLookupTable = vtk.vtkLookupTable()
 vLookupTable.SetValueRange(0.5,1)
+vLookupTable.SetVectorModeToMagnitude()
+vLookupTable.Build()
 
 mapStreamTube1 = vtk.vtkPolyDataMapper()
 mapStreamTube1.SetInputConnection(streamTube1.GetOutputPort())
 mapStreamTube1.SetLookupTable(vLookupTable)
-mapStreamTube1.SetScalarVisibility(0)	
-
+#mapStreamTube1.SetScalarVisibility(0)	
+#mapStreamTube1.ScalarVisibilityOn()
+mapStreamTube1.SetScalarModeToUsePointFieldData()
+mapStreamTube1.SelectColorArray('vectors')
+# When using vector magnitude for coloring
+#mapper.SetScalarRange(reader.GetOutput().GetPointData().GetVectors().GetRange(-1))
+print reader.GetOutput()
 
 
 mapStreamTube2 = vtk.vtkPolyDataMapper()
 mapStreamTube2.SetInputConnection(streamTube2.GetOutputPort())
 mapStreamTube2.SetLookupTable(vLookupTable)
-mapStreamTube2.SetScalarVisibility(0)
+#mapStreamTube2.SetScalarVisibility(0)
+mapStreamTube2.SetScalarModeToUsePointFieldData()
+mapStreamTube2.SelectColorArray('vectors')
 
 
 
