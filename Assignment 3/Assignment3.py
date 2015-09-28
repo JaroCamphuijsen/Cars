@@ -14,6 +14,20 @@ import Tkinter, random
 import vtk
 from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 nPoints = 300
+mix = True
+
+if mix:
+	y1 = [0,30]
+	y2 = [30,60]
+	z1 = [0,60]
+	z2 = [0,60]
+else:
+	y1 = [0,60]
+	y2 = [0,60]
+	z1 = [0,30]
+	z2 = [30,60]
+
+
 # Create the renderer and the GUI
 root = Tkinter.Tk() 
 aRenderer = vtk.vtkRenderer()
@@ -45,7 +59,7 @@ dataMapper.SetInputConnection(contourNormals.GetOutputPort())
 dataMapper.ScalarVisibilityOff() 
 contour = vtk.vtkActor()
 contour.SetMapper(dataMapper)
-contour.GetProperty().SetOpacity(0.25)
+contour.GetProperty().SetOpacity(0.8)
 
 
 pointSource1 = vtk.vtkProgrammableSource()
@@ -57,7 +71,7 @@ def points1():
     output.SetPoints(points1)
 
     for i in range(nPoints):
-        x, y, z = 1.5, (.5 + random.randint(0,30)), (.5 + random.randint(0,60))
+        x, y, z = 1.5, (.5 + random.randint(y1[0],y1[1])), (.5 + random.randint(z1[0],z1[1]))
         points1.InsertNextPoint(x, y, z)
 
 def points2():
@@ -66,7 +80,7 @@ def points2():
     output.SetPoints(points2)
 
     for i in range(nPoints):
-        x, y, z = 1.5, (.5 + random.randint(30,60)), (.5 + random.randint(0,60))
+        x, y, z = 1.5, (.5 + random.randint(y2[0],y2[1])), (.5 + random.randint(z2[0],z2[1]))
         points2.InsertNextPoint(x, y, z)
 
 pointSource1.SetExecuteMethod(points1)
@@ -130,14 +144,17 @@ mapStreamTube2.SetScalarVisibility(0)
 
 streamTubeActor1 = vtk.vtkActor()
 streamTubeActor1.SetMapper(mapStreamTube1)
-streamTubeActor1.GetProperty().BackfaceCullingOn()
+# streamTubeActor1.GetProperty().BackfaceCullingOn()
 streamTubeActor1.GetProperty().SetColor(1, 0, 0)
+# streamTubeActor1.GetProperty().SetOpacity(.95)
 
 
 streamTubeActor2 = vtk.vtkActor()
 streamTubeActor2.SetMapper(mapStreamTube2)
-streamTubeActor2.GetProperty().BackfaceCullingOn()
+# streamTubeActor2.GetProperty().BackfaceCullingOn()
 streamTubeActor2.GetProperty().SetColor(0,1,0)
+# streamTubeActor2.GetProperty().SetOpacity(.95)
+
 
 #Create outline to show extent of the data.
 outlineData = vtk.vtkOutlineFilter()
