@@ -11,7 +11,7 @@ import Tkinter, random
 import vtk
 from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 nPoints = 300
-mix = False #Determines the location of the point source retangle and thus 
+mix = True #Determines the location of the point source retangle and thus 
 #the degree of mixing
 
 if mix:
