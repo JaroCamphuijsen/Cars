@@ -7,14 +7,12 @@ Created on Wed Sep 16 14:27:37 2015
 @author: Jaromir Camphuijsen (6042473) and Eva van Weel(10244743)
 """
 
-#This code is based on code found at: http://www.vtk.org/gitweb?p=VTK.git;
-#a=blob;f=Examples/Medical/Python/Medical3.py
-
 import Tkinter, random
 import vtk
 from vtk.tk.vtkTkRenderWidget import vtkTkRenderWidget
 nPoints = 300
-mix = True
+mix = False #Determines the location of the point source retangle and thus 
+#the degree of mixing
 
 if mix:
 	y1 = [0,30]
@@ -39,12 +37,9 @@ renWin.AddRenderer(aRenderer)
 aRenderer.SetBackground(1, 1, 1)
 renWin.SetSize(600, 480)
 
-# Read the 2D images (CT scan slices). 
+#Read the regular structured grid
 reader = vtk.vtkStructuredPointsReader()
 reader.SetFileName("./SMRX.vtk")
-
-scalarMin, scalarMax = reader.GetOutput().GetScalarRange()
-
 
 #Create an isosurface and use vtkPolyDataNormals to create normals for smooth 
 #surface shading.
@@ -61,7 +56,7 @@ contour = vtk.vtkActor()
 contour.SetMapper(dataMapper)
 contour.GetProperty().SetOpacity(0.8)
 
-
+#Point sources for the streamlines
 pointSource1 = vtk.vtkProgrammableSource()
 pointSource2 = vtk.vtkProgrammableSource()
 
@@ -86,6 +81,7 @@ def points2():
 pointSource1.SetExecuteMethod(points1)
 pointSource2.SetExecuteMethod(points2)
 
+#Streamlines for point source 1
 integ = vtk.vtkRungeKutta45()
 streamer1 = vtk.vtkStreamTracer()
 streamer1.SetInputConnection(reader.GetOutputPort())
@@ -99,6 +95,7 @@ streamer1.SetIntegrationDirection(0)
 streamer1.SetIntegrator(integ)
 streamer1.SetRotationScale(0.5)
 
+#Streamlines for point source 2
 streamer2 = vtk.vtkStreamTracer()
 streamer2.SetInputConnection(reader.GetOutputPort())
 streamer2.SetSourceConnection(pointSource2.GetOutputPort())
@@ -111,12 +108,12 @@ streamer2.SetIntegrationDirection(0)
 streamer2.SetIntegrator(integ)
 streamer2.SetRotationScale(0.5)
 
+#Wrap a tube around the streamlines to better visualize them
 streamTube1 = vtk.vtkTubeFilter()
 streamTube1.SetInputConnection(streamer1.GetOutputPort())
 streamTube1.SetRadius(.25)
 streamTube1.SetNumberOfSides(12)
 streamTube1.SetCapping(1)
-
 
 streamTube2 = vtk.vtkTubeFilter()
 streamTube2.SetInputConnection(streamer2.GetOutputPort())
@@ -124,46 +121,27 @@ streamTube2.SetRadius(.25)
 streamTube2.SetNumberOfSides(12)
 streamTube2.SetCapping(1)
 
-
 vLookupTable = vtk.vtkLookupTable()
 vLookupTable.SetValueRange(0.5,1)
-vLookupTable.SetVectorModeToMagnitude()
-vLookupTable.Build()
 
 mapStreamTube1 = vtk.vtkPolyDataMapper()
 mapStreamTube1.SetInputConnection(streamTube1.GetOutputPort())
 mapStreamTube1.SetLookupTable(vLookupTable)
-#mapStreamTube1.SetScalarVisibility(0)	
-#mapStreamTube1.ScalarVisibilityOn()
-mapStreamTube1.SetScalarModeToUsePointFieldData()
-mapStreamTube1.SelectColorArray('vectors')
-# When using vector magnitude for coloring
-#mapper.SetScalarRange(reader.GetOutput().GetPointData().GetVectors().GetRange(-1))
-print reader.GetOutput()
-
+mapStreamTube1.SetScalarVisibility(0)	
 
 mapStreamTube2 = vtk.vtkPolyDataMapper()
 mapStreamTube2.SetInputConnection(streamTube2.GetOutputPort())
 mapStreamTube2.SetLookupTable(vLookupTable)
-#mapStreamTube2.SetScalarVisibility(0)
-mapStreamTube2.SetScalarModeToUsePointFieldData()
-mapStreamTube2.SelectColorArray('vectors')
+mapStreamTube2.SetScalarVisibility(0)
 
-
-
+#Set the colors of the actors to be able to better distinguish them
 streamTubeActor1 = vtk.vtkActor()
 streamTubeActor1.SetMapper(mapStreamTube1)
-# streamTubeActor1.GetProperty().BackfaceCullingOn()
 streamTubeActor1.GetProperty().SetColor(1, 0, 0)
-# streamTubeActor1.GetProperty().SetOpacity(.95)
-
 
 streamTubeActor2 = vtk.vtkActor()
 streamTubeActor2.SetMapper(mapStreamTube2)
-# streamTubeActor2.GetProperty().BackfaceCullingOn()
 streamTubeActor2.GetProperty().SetColor(0,1,0)
-# streamTubeActor2.GetProperty().SetOpacity(.95)
-
 
 #Create outline to show extent of the data.
 outlineData = vtk.vtkOutlineFilter()
@@ -194,8 +172,6 @@ aCamera.Azimuth(-45)
 aRenderer.ResetCamera() #Without this camera Reset, the actors will not 
 # be displayed on starting the visualization
 aCamera.Dolly(1.3)
-
-
 
 root.mainloop()
 
