@@ -24,7 +24,7 @@ reader.SetDataExtent(0,255,0,255,0, 93)
 reader.SetFileNameSliceOffset(1)
 reader.SetDataScalarTypeToUnsignedShort()
 reader.SetDataByteOrderToBigEndian()
-reader.SetFilePrefix("C:\Users\Eva van Weel\Documents\Uva\Master 2\Scientific Visualization and Virtual Reality\Assignment 2\slice")
+reader.SetFilePrefix("../data/slice")
 reader.SetDataSpacing(3.2,3.2,1.5)
 
 #---------------------------------------------------------
