@@ -48,27 +48,28 @@ def createOpacityTransferFunction(values):
 
 #scale=scale(renWin, opacityTransferFunction)
 
-#==============================================================================
-# v = IntVar()
-# v.set(1)
-# 
-# def visTissue():
-#     print v
-#     print v.get()
-# 
-#    
-# Label(root, text="""Choose tissue(s) to visualize:""").pack()
-# 
-# for label in tissueList:
-#     c = Checkbutton( root, text=label ,variable=v,command=visTissue)
-#     c.pack(side='right')
-#==============================================================================
 
-def ShowChoice(v):
+def visualizeTissue(v):
     colorTransferFunction = vtk.vtkColorTransferFunction()
     #colorTransferFunction.AddRGBPoint(16.0, 1.0, 0.0, 1.0) #Is deze altijd nodig?
-    opacityTransferFunction = createOpacityTransferFunction([v])
-    colorTransferFunction.AddRGBPoint(v, colourDict.get(v)[1], colourDict.get(v)[2], colourDict.get(v)[3])
+    
+    #Show all tissues, not working yet :(
+    if v == 0:
+        valueList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        
+        for value in valueList:
+            colorTransferFunction.AddRGBPoint(value, colourDict.get(value)[1], colourDict.get(value)[2], colourDict.get(value)[3])
+            opacityList.append(value)
+    elif v in opacityList:
+        opacityList.remove(v)
+        colorTransferFunction.RemovePoint(v)
+    else:
+        opacityList.append(v)
+        sorted(opacityList)
+        colorTransferFunction.AddRGBPoint(v, colourDict.get(v)[1], colourDict.get(v)[2], colourDict.get(v)[3])
+        
+            
+    opacityTransferFunction = createOpacityTransferFunction(opacityList)
  
     # The property describes how the data will look
     volumeProperty = vtk.vtkVolumeProperty()
@@ -102,15 +103,20 @@ def ShowChoice(v):
     renWin.Render()
 
 if __name__ == "__main__":
-    tissueList = ["Blood", "Brain", "Duodenum", "Eye retina", 
-                  "Eye white", "Heart", "Ileum", "Kidney", "Large intestine",
-                  "Liver", "Lung", "Nerve", "Skeleton", "Spleen", "Stomach"]
+    #tissueList = ["Blood", "Brain", "Duodenum", "Eye retina", 
+    #              "Eye white", "Heart", "Ileum", "Kidney", "Large intestine",
+    #              "Liver", "Lung", "Nerve", "Skeleton", "Spleen", "Stomach"]
+    
+    global opacityList
+    opacityList = []
+    print opacityList
     
     tissueDict = {0: "All", 1: "Blood", 2: "Brain", 3: "Duodenum", 4: "Eye retina", 
                   5: "Eye white", 6: "Heart", 7:"Ileum", 8:"Kidney", 9:"Large intestine",
                   10:"Liver", 11:"Lung", 12:"Nerve", 13:"Skeleton", 14:"Spleen", 15:"Stomach"}
     
-    colourDict = {1:[1.0, 0.75, 0.0, 0.0], 2:[2.0, 0.65, 0.65, 0.6], 3:[[1.0, 0.75, 0.0, 0.0]], 4:[4.0, 1.0, 1.0, 0.0], 
+    #Deze kleuren zijn nog niet allemaal goed. Sommigen zijn dubbel!
+    colourDict = {1:[1.0, 0.75, 0.0, 0.0], 2:[2.0, 0.65, 0.65, 0.6], 3:[1.0, 0.75, 0.0, 0.0], 4:[4.0, 1.0, 1.0, 0.0], 
                   5:[1.0, 0.75, 0.0, 0.0], 6:[1.0, 0.75, 0.0, 0.0], 7:[7.0, 0.0, 1.0, 0.0], 8:[1.0, 0.75, 0.0, 0.0], 9:[1.0, 0.75, 0.0, 0.0],
                   10:[10.0, 0.0, 1.0, 1.0], 11:[1.0, 0.75, 0.0, 0.0], 12:[1.0, 0.75, 0.0, 0.0], 13:[13.0, 1.0, 1.0, 1.0], 14:[1.0, 0.75, 0.0, 0.0], 15:[1.0, 0.75, 0.0, 0.0]}
 
@@ -129,14 +135,27 @@ if __name__ == "__main__":
     reader.SetDataSpacing(1,1,1.5)
     reader.SetDataScalarTypeToUnsignedChar()
     reader.SetFilePattern("./WholeFrog/frogTissue.%s%03d.raw")
-    # reader.SetDataMask(0x7fff)
     reader.Update()
 
     Label(root, text="""Choose tissue(s) to visualize:""", justify = LEFT, padx = 20).pack()
 
     for value, tissue in tissueDict.iteritems():
         var = IntVar()
-        Checkbutton(root, text=tissue, variable=var, command=lambda v = value: ShowChoice(v)).pack(side='left')
+        
+        #Set all tissues selected, not working yet :(
+        if value == 0:
+            cb = Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v))
+            cb.select()          
+            cb.pack(side='left')
+        else:
+            Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')
+
+            
+            
+
+      
+          
+ 
 
     root.mainloop()
 
