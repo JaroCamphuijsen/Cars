@@ -114,7 +114,6 @@ class scale:
         contourFilter.SetValue(0, int(float(val)))
         self.renWin.Render()
 
-
 scale=scale(root, renWin, contourFilter)
 root.mainloop()
 
