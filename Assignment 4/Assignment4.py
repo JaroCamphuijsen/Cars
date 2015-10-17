@@ -26,28 +26,6 @@ def createOpacityTransferFunction(values):
     opacityTransferFunction.AddPoint(17.0, 0)
     return opacityTransferFunction
 
-#==============================================================================
-# class scale:
-#     "Scale"
-#     def __init__(self, renWin, opacityTransferFunction):
-#         self.renWin, self.opacityTransferFunction = renWin, opacityTransferFunction
-#         scale = Tkinter.Scale(root, length=1000, from_=0, to=16,
-#                               resolution=.1, orient= "horizontal", 
-#                               command=self.change)
-#         scale.set(1)  
-#         scale.pack(side='bottom')
-# 
-#     def change(self, val):
-#         self.opacityTransferFunction = createOpacityTransferFunction([int(float(val))])
-#         #volumeProperty.SetScalarOpacity(opacityTransferFunction)
-#         self.renWin.Render()
-#==============================================================================
-
-
-
-
-#scale=scale(renWin, opacityTransferFunction)
-
 
 def visualizeTissue(v):
     allTissues = False
@@ -65,7 +43,11 @@ def visualizeTissue(v):
                 opacityList.remove(value[0])
             elif value[0] not in opacityList:
                 aRenderer.AddVolume(volumeDict.get(value[0]))
-                opacityList.append(value[0])
+                
+                if value[0] != 1.5:
+                    opacityList.append(value[0])
+    elif v == 16: #Skin
+        aRenderer.AddVolume(volumeDict.get(1.5))
     elif v in opacityList:
         opacityList.remove(v)
         aRenderer.RemoveVolume(volumeDict.get(v))
@@ -86,18 +68,31 @@ def visualizeTissue(v):
     
 def createVolumeDict():
     global colourDict
-    colourDict = {1:[1.0, 0.75, 0.0, 0.0], 2:[2.0, 0.65, 0.65, 0.6], 3:[1.0, 0.75, 0.0, 0.0], 4:[4.0, 1.0, 1.0, 0.0], 
+    #0 is skin colour
+    colourDict = {1.5:[1.5,0.0,1.0,0.0],1:[1.0, 0.75, 0.0, 0.0], 2:[2.0, 0.65, 0.65, 0.6], 3:[1.0, 0.75, 0.0, 0.0], 4:[4.0, 1.0, 1.0, 0.0], 
                   5:[1.0, 0.75, 0.0, 0.0], 6:[1.0, 0.75, 0.0, 0.0], 7:[7.0, 0.0, 1.0, 0.0], 8:[1.0, 0.75, 0.0, 0.0], 9:[1.0, 0.75, 0.0, 0.0],
                   10:[10.0, 0.0, 1.0, 1.0], 11:[1.0, 0.75, 0.0, 0.0], 12:[1.0, 0.75, 0.0, 0.0], 13:[13.0, 1.0, 1.0, 1.0], 14:[1.0, 0.75, 0.0, 0.0], 15:[1.0, 0.75, 0.0, 0.0]}
     #[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
     global volumeDict
     volumeDict = {}
 
-    colorTransferFunction = vtk.vtkColorTransferFunction()
+    
+    #opacityTransferFunction = createOpacityTransferFunction([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
     
     for value, colourArray in colourDict.iteritems():
+        colorTransferFunction = vtk.vtkColorTransferFunction()
         colorTransferFunction.AddRGBPoint(value, colourArray[1], colourArray[2], colourArray[3])
+        
         opacityTransferFunction = createOpacityTransferFunction([value])
+
+
+        #Skin
+        if value == 1.5:
+            opacityTransferFunction = vtk.vtkPiecewiseFunction()
+            opacityTransferFunction.AddPoint(0, 0)
+            opacityTransferFunction.AddPoint(1.5, 0.5)
+            opacityTransferFunction.AddPoint(3, 0)
+        
 
    # for value, colourArray in colourDict.iteritems():
         # The property describes how the data will look
@@ -111,7 +106,11 @@ def createVolumeDict():
         compositeFunction = vtk.vtkVolumeRayCastCompositeFunction()
         volumeMapper = vtk.vtkVolumeRayCastMapper()
         volumeMapper.SetVolumeRayCastFunction(compositeFunction)
-        volumeMapper.SetInputConnection(reader.GetOutputPort())
+        if value == 1.5:
+            volumeMapper.SetInputConnection(readerSkin.GetOutputPort())
+        else:
+            volumeMapper.SetInputConnection(reader.GetOutputPort())
+
         
         
         # The volume holds the mapper and the property and
@@ -123,10 +122,10 @@ def createVolumeDict():
         volumeDict[value] = volume
 
         
-    print opacityTransferFunction
-        
-        
-    
+    print volumeDict
+
+
+       
 
 if __name__ == "__main__":
     #tissueList = ["Blood", "Brain", "Duodenum", "Eye retina", 
@@ -136,13 +135,15 @@ if __name__ == "__main__":
     global opacityList
     global colorTransferFunction
     global opacityTransferFunction
+    global opacityTransferFunctionSkin
+    global skinVolume
     
     opacityList = []
     print opacityList
     
     tissueDict = {0: "All", 1: "Blood", 2: "Brain", 3: "Duodenum", 4: "Eye retina", 
                   5: "Eye white", 6: "Heart", 7:"Ileum", 8:"Kidney", 9:"Large intestine",
-                  10:"Liver", 11:"Lung", 12:"Nerve", 13:"Skeleton", 14:"Spleen", 15:"Stomach"}
+                  10:"Liver", 11:"Lung", 12:"Nerve", 13:"Skeleton", 14:"Spleen", 15:"Stomach", 16:"Skin"}
     
     #Deze kleuren zijn nog niet allemaal goed. Sommigen zijn dubbel!
     
@@ -163,16 +164,23 @@ if __name__ == "__main__":
     reader.SetDataScalarTypeToUnsignedChar()
     reader.SetFilePattern("./WholeFrog/frogTissue.%s%03d.raw")
     reader.Update()
+    
+    readerSkin = vtk.vtkImageReader()
+    readerSkin.SetDataExtent(0,499,0,469,1,136)
+    readerSkin.SetDataSpacing(1,1,1.5)
+    readerSkin.SetDataScalarTypeToUnsignedChar()
+    readerSkin.SetFilePattern("./WholeFrog/frog.%s%03d.raw")
+    readerSkin.Update()
+    
+    createVolumeDict()
 
     Label(root, text="""Choose tissue(s) to visualize:""", justify = LEFT, padx = 20).pack()
 
     for value, tissue in tissueDict.iteritems():
         var = IntVar()
-        Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')
+        Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')       
+            
 
-            
-            
-    createVolumeDict()
     
     
   
