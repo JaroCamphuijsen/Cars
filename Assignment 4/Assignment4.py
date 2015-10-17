@@ -16,15 +16,15 @@ from Tkinter import *
 
 
 def createOpacityTransferFunction(values):
-	opacityTransferFunction = vtk.vtkPiecewiseFunction()
-	opacityTransferFunction.AddPoint(1.0, 0)
-	for v in values:
-		opacityTransferFunction.AddPoint(v - 1, 0)
-		opacityTransferFunction.AddPoint(v, .2)
-		opacityTransferFunction.AddPoint(v + 1, 0)
+    opacityTransferFunction = vtk.vtkPiecewiseFunction()
+    opacityTransferFunction.AddPoint(1.0, 0)
+    for v in values:
+        opacityTransferFunction.AddPoint(v - 0.01, 0)
+        opacityTransferFunction.AddPoint(v, .2)
+        opacityTransferFunction.AddPoint(v + 0.01, 0)
 		
-	opacityTransferFunction.AddPoint(17.0, 0)
-	return opacityTransferFunction
+    opacityTransferFunction.AddPoint(17.0, 0)
+    return opacityTransferFunction
 
 #==============================================================================
 # class scale:
@@ -50,46 +50,28 @@ def createOpacityTransferFunction(values):
 
 
 def visualizeTissue(v):
-    colorTransferFunction = vtk.vtkColorTransferFunction()
+    allTissues = False
+  
     #colorTransferFunction.AddRGBPoint(16.0, 1.0, 0.0, 1.0) #Is deze altijd nodig?
     
     #Show all tissues, not working yet :(
     if v == 0:
-        valueList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        if len(opacityList) == 15:
+            allTissues = True
         
-        for value in valueList:
-            colorTransferFunction.AddRGBPoint(value, colourDict.get(value)[1], colourDict.get(value)[2], colourDict.get(value)[3])
-            opacityList.append(value)
+        for value in colourDict.iteritems():
+            if allTissues:
+                aRenderer.RemoveVolume(volumeDict.get(value[0]))
+                opacityList.remove(value[0])
+            elif value[0] not in opacityList:
+                aRenderer.AddVolume(volumeDict.get(value[0]))
+                opacityList.append(value[0])
     elif v in opacityList:
         opacityList.remove(v)
-        colorTransferFunction.RemovePoint(v)
+        aRenderer.RemoveVolume(volumeDict.get(v))
     else:
+        aRenderer.AddVolume(volumeDict.get(v))
         opacityList.append(v)
-        sorted(opacityList)
-        colorTransferFunction.AddRGBPoint(v, colourDict.get(v)[1], colourDict.get(v)[2], colourDict.get(v)[3])
-        
-            
-    opacityTransferFunction = createOpacityTransferFunction(opacityList)
- 
-    # The property describes how the data will look
-    volumeProperty = vtk.vtkVolumeProperty()
-    volumeProperty.SetColor(colorTransferFunction)
-    volumeProperty.SetScalarOpacity(opacityTransferFunction)
-    # volumeProperty.ShadeOn()
-    volumeProperty.SetInterpolationTypeToLinear()
-    
-    # The mapper / ray cast function know how to render the data
-    compositeFunction = vtk.vtkVolumeRayCastCompositeFunction()
-    volumeMapper = vtk.vtkVolumeRayCastMapper()
-    volumeMapper.SetVolumeRayCastFunction(compositeFunction)
-    volumeMapper.SetInputConnection(reader.GetOutputPort())
-    
-    # The volume holds the mapper and the property and
-    # can be used to position/orient the volume
-    volume = vtk.vtkVolume()
-    volume.SetMapper(volumeMapper)
-    volume.SetProperty(volumeProperty)
-    aRenderer.AddVolume(volume)
     
     # Camera (viewpoint) settings
     aCamera = vtk.vtkCamera()
@@ -101,6 +83,50 @@ def visualizeTissue(v):
     aCamera.Dolly(1.3)
     
     renWin.Render()
+    
+def createVolumeDict():
+    global colourDict
+    colourDict = {1:[1.0, 0.75, 0.0, 0.0], 2:[2.0, 0.65, 0.65, 0.6], 3:[1.0, 0.75, 0.0, 0.0], 4:[4.0, 1.0, 1.0, 0.0], 
+                  5:[1.0, 0.75, 0.0, 0.0], 6:[1.0, 0.75, 0.0, 0.0], 7:[7.0, 0.0, 1.0, 0.0], 8:[1.0, 0.75, 0.0, 0.0], 9:[1.0, 0.75, 0.0, 0.0],
+                  10:[10.0, 0.0, 1.0, 1.0], 11:[1.0, 0.75, 0.0, 0.0], 12:[1.0, 0.75, 0.0, 0.0], 13:[13.0, 1.0, 1.0, 1.0], 14:[1.0, 0.75, 0.0, 0.0], 15:[1.0, 0.75, 0.0, 0.0]}
+    #[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    global volumeDict
+    volumeDict = {}
+
+    colorTransferFunction = vtk.vtkColorTransferFunction()
+    
+    for value, colourArray in colourDict.iteritems():
+        colorTransferFunction.AddRGBPoint(value, colourArray[1], colourArray[2], colourArray[3])
+        opacityTransferFunction = createOpacityTransferFunction([value])
+
+   # for value, colourArray in colourDict.iteritems():
+        # The property describes how the data will look
+        volumeProperty = vtk.vtkVolumeProperty()
+        volumeProperty.SetColor(colorTransferFunction)
+        volumeProperty.SetScalarOpacity(opacityTransferFunction)
+        # volumeProperty.ShadeOn()
+        volumeProperty.SetInterpolationTypeToLinear()
+        
+        # The mapper / ray cast function know how to render the data
+        compositeFunction = vtk.vtkVolumeRayCastCompositeFunction()
+        volumeMapper = vtk.vtkVolumeRayCastMapper()
+        volumeMapper.SetVolumeRayCastFunction(compositeFunction)
+        volumeMapper.SetInputConnection(reader.GetOutputPort())
+        
+        
+        # The volume holds the mapper and the property and
+        # can be used to position/orient the volume
+        volume = vtk.vtkVolume()
+        volume.SetMapper(volumeMapper)
+        volume.SetProperty(volumeProperty)
+        
+        volumeDict[value] = volume
+
+        
+    print opacityTransferFunction
+        
+        
+    
 
 if __name__ == "__main__":
     #tissueList = ["Blood", "Brain", "Duodenum", "Eye retina", 
@@ -108,6 +134,9 @@ if __name__ == "__main__":
     #              "Liver", "Lung", "Nerve", "Skeleton", "Spleen", "Stomach"]
     
     global opacityList
+    global colorTransferFunction
+    global opacityTransferFunction
+    
     opacityList = []
     print opacityList
     
@@ -116,9 +145,7 @@ if __name__ == "__main__":
                   10:"Liver", 11:"Lung", 12:"Nerve", 13:"Skeleton", 14:"Spleen", 15:"Stomach"}
     
     #Deze kleuren zijn nog niet allemaal goed. Sommigen zijn dubbel!
-    colourDict = {1:[1.0, 0.75, 0.0, 0.0], 2:[2.0, 0.65, 0.65, 0.6], 3:[1.0, 0.75, 0.0, 0.0], 4:[4.0, 1.0, 1.0, 0.0], 
-                  5:[1.0, 0.75, 0.0, 0.0], 6:[1.0, 0.75, 0.0, 0.0], 7:[7.0, 0.0, 1.0, 0.0], 8:[1.0, 0.75, 0.0, 0.0], 9:[1.0, 0.75, 0.0, 0.0],
-                  10:[10.0, 0.0, 1.0, 1.0], 11:[1.0, 0.75, 0.0, 0.0], 12:[1.0, 0.75, 0.0, 0.0], 13:[13.0, 1.0, 1.0, 1.0], 14:[1.0, 0.75, 0.0, 0.0], 15:[1.0, 0.75, 0.0, 0.0]}
+    
 
     root = Tkinter.Tk() 
     aRenderer = vtk.vtkRenderer()
@@ -141,21 +168,25 @@ if __name__ == "__main__":
 
     for value, tissue in tissueDict.iteritems():
         var = IntVar()
-        
-        #Set all tissues selected, not working yet :(
-        if value == 0:
-            cb = Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v))
-            cb.select()          
-            cb.pack(side='left')
-        else:
-            Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')
+        Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')
 
             
             
-
-      
-          
- 
+    createVolumeDict()
+    
+    
+  
+#    aRenderer.AddVolume(volumeDict.get(1))
+#          
+#    aCamera = vtk.vtkCamera()
+#    aRenderer.SetActiveCamera(aCamera)
+#    aCamera.SetPosition(0,0,-1)
+#    aCamera.Azimuth(-45)
+#    aRenderer.ResetCamera() #Without this camera Reset, the actors will not 
+#    # be displayed on starting the visualization
+#    aCamera.Dolly(1.3)
+#    
+#    renWin.Render()
 
     root.mainloop()
 
