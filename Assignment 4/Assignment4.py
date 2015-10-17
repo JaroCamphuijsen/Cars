@@ -74,8 +74,11 @@ def createVolumeDict():
                   10:[10.0, 0.0, 1.0, 1.0], 11:[1.0, 0.75, 0.0, 0.0], 12:[1.0, 0.75, 0.0, 0.0], 13:[13.0, 1.0, 1.0, 1.0], 14:[1.0, 0.75, 0.0, 0.0], 15:[1.0, 0.75, 0.0, 0.0]}
     #[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
     global volumeDict
+    global lut
     volumeDict = {}
 
+ 
+       
     
     #opacityTransferFunction = createOpacityTransferFunction([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
     
@@ -120,8 +123,7 @@ def createVolumeDict():
         volume.SetProperty(volumeProperty)
         
         volumeDict[value] = volume
-
-        
+    
     print volumeDict
 
 
@@ -137,7 +139,7 @@ if __name__ == "__main__":
     global opacityTransferFunction
     global opacityTransferFunctionSkin
     global skinVolume
-    
+        
     opacityList = []
     print opacityList
     
@@ -178,10 +180,18 @@ if __name__ == "__main__":
 
     for value, tissue in tissueDict.iteritems():
         var = IntVar()
-        Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')       
-            
-
-    
+        
+        #All tissues
+        if value == 0:
+            Checkbutton(root, text=tissue, variable=var, command=lambda v = value: visualizeTissue(v)).pack(side='left')       
+        #Skin, change value to 1.5 to find corresponding value in colorDict
+        elif value == 16:
+            bgColor = '#%02x%02x%02x' % (colourDict.get(1.5)[1]*255, colourDict.get(1.5)[2]*255, colourDict.get(1.5)[3]*255)
+            Checkbutton(root, text=tissue, variable=var, bg= bgColor, command=lambda v = value: visualizeTissue(v)).pack(side='left')       
+        else:
+            bgColor = '#%02x%02x%02x' % (colourDict.get(value)[1]*255, colourDict.get(value)[2]*255, colourDict.get(value)[3]*255)
+            Checkbutton(root, text=tissue, variable=var, bg= bgColor, command=lambda v = value: visualizeTissue(v)).pack(side='left')       
+        
     
   
 #    aRenderer.AddVolume(volumeDict.get(1))
